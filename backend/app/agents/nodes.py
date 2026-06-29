@@ -146,8 +146,8 @@ async def assemble_context(state: AgentState) -> dict[str, Any]:
     if info:
         parts.append(f"=== Company: {info.get('name', state['symbol'])} ({state['symbol']}) ===")
         parts.append(f"Sector: {info.get('sector', 'N/A')} | Industry: {info.get('industry', 'N/A')}")
-        parts.append(f"Market Cap: ${info.get('market_cap', 0):,.0f}")
-        parts.append(f"Current Price: ${info.get('current_price', 0)}")
+        parts.append(f"Market Cap: ${(info.get('market_cap') or 0):,.0f}")
+        parts.append(f"Current Price: ${info.get('current_price') or 'N/A'}")
         parts.append("")
 
     # Computed metrics

@@ -7,7 +7,7 @@ Loads settings from environment variables / .env file using Pydantic BaseSetting
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     # ── Vector Store (Qdrant) ──────────────────────────────────────────
     qdrant_url: str = "http://localhost:6333"
+    qdrant_api_key: Optional[str] = None  # Required for Qdrant Cloud
 
     # ── Cache (Redis) ──────────────────────────────────────────────────
     redis_url: str = "redis://localhost:6379/0"

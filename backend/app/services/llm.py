@@ -1,7 +1,7 @@
 """
 FinSight AI — Gemini LLM client.
 
-Wraps Google's Gemini 1.5 Flash for both streaming text generation
+Wraps Google's Gemini 2.5 Flash for both streaming text generation
 and structured JSON output. Uses the google-genai SDK directly
 for maximum compatibility with auth keys (AQ. prefix).
 """
@@ -31,11 +31,10 @@ You provide institutional-grade analysis grounded strictly in the data provided 
 Rules:
 1. ONLY use the financial data, metrics, and document excerpts provided in the context.
 2. Never fabricate numbers. If data is missing, say so explicitly.
-3. When citing metrics (P/E, ROE, margins), reference the exact period they belong to.
-4. Provide actionable insights, not generic platitudes.
-5. Structure your responses with clear headers and bullet points.
-6. When analyzing trends, compare across multiple periods and explain the trajectory.
-7. Always consider both bullish and bearish perspectives."""
+3. BE CONCISE. Use bullet points and clear markdown headers. Do not write massive paragraphs.
+4. Add clear newline spacing between bullet points.
+5. Provide actionable insights, not generic platitudes.
+6. When citing metrics (P/E, ROE, margins), reference the exact period they belong to."""
 
 MEMO_GENERATOR_PROMPT = """You are FinSight AI's Investment Memo Generator.
 Given financial data and computed metrics for a company, produce a structured 
@@ -93,14 +92,15 @@ class GeminiClient:
         system_prompt: str = FINANCIAL_ANALYST_PROMPT,
     ) -> AsyncIterator[str]:
         """Stream text response token-by-token."""
-        async for chunk in _client.aio.models.generate_content_stream(
+        stream = await _client.aio.models.generate_content_stream(
             model=MODEL,
             contents=f"Context:\n{context}\n\nQuestion: {query}",
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt,
                 temperature=0.1,
             ),
-        ):
+        )
+        async for chunk in stream:
             if chunk.text:
                 yield chunk.text
 

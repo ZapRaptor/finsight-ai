@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* ── FinSight AI Design System ────────────────────────────── */
+
+:root {
+  /* Brand colors */
+  --accent: 139 92% 63%;
+  --accent-hover: 139 92% 55%;
+  --surface-0: 220 20% 4%;
+  --surface-1: 220 18% 7%;
+  --surface-2: 220 16% 11%;
+  --surface-3: 220 14% 16%;
+  --border: 220 14% 18%;
+  --text-primary: 220 20% 95%;
+  --text-secondary: 220 10% 60%;
+  --text-muted: 220 10% 40%;
+
+  /* Semantic */
+  --green: 152 69% 53%;
+  --red: 0 72% 60%;
+  --amber: 38 92% 55%;
+  --blue: 217 91% 60%;
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--surface-3)) transparent;
+}
+
+body {
+  background: hsl(var(--surface-0));
+  color: hsl(var(--text-primary));
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ── Glassmorphism Utilities ──────────────────────────────── */
+
+.glass {
+  background: hsla(var(--surface-1) / 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid hsla(var(--border) / 0.5);
+}
+
+.glass-hover:hover {
+  background: hsla(var(--surface-2) / 0.8);
+  border-color: hsl(var(--accent) / 0.3);
+}
+
+/* ── Glow Effects ─────────────────────────────────────────── */
+
+.glow-accent {
+  box-shadow: 0 0 20px -5px hsl(var(--accent) / 0.3),
+              0 0 60px -15px hsl(var(--accent) / 0.15);
+}
+
+.glow-green {
+  box-shadow: 0 0 12px -3px hsl(var(--green) / 0.4);
+}
+
+.glow-red {
+  box-shadow: 0 0 12px -3px hsl(var(--red) / 0.4);
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes typing {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg,
+    hsl(var(--surface-2)) 25%,
+    hsl(var(--surface-3)) 50%,
+    hsl(var(--surface-2)) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.animate-typing {
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+/* ── Stagger Children ─────────────────────────────────────── */
+
+.stagger-children > * {
+  opacity: 0;
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* ── Custom Scrollbar (Webkit) ────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--surface-3));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--text-muted));
+}
+
+/* ── Recharts Overrides ───────────────────────────────────── */
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: hsl(var(--border)) !important;
+  stroke-opacity: 0.5;
+}
+
+.recharts-text {
+  fill: hsl(var(--text-secondary)) !important;
+  font-size: 11px;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}

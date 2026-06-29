@@ -33,7 +33,10 @@ except Exception as e:
 
 class EmbedderService:
     def __init__(self):
-        self.client = AsyncQdrantClient(url=settings.qdrant_url)
+        kwargs: dict = {"url": settings.qdrant_url}
+        if settings.qdrant_api_key:
+            kwargs["api_key"] = settings.qdrant_api_key
+        self.client = AsyncQdrantClient(**kwargs)
 
     async def ensure_collection(self, collection_name: str) -> None:
         """Create the Qdrant collection if it doesn't exist."""

@@ -1,99 +1,340 @@
-# FinSight AI 📈
+<div align="center">
 
-FinSight AI is an institutional-grade, AI-powered financial research assistant. It automates the extraction, analysis, and synthesis of financial data to provide actionable investment insights and structured investment memos. 
+# 📈 FinSight AI
 
-The platform leverages LangGraph for complex agentic workflows, Qdrant for vector-based semantic search, and Google's Gemini LLMs for reasoning over deep financial context.
+**AI-Powered Institutional-Grade Financial Research Platform**
 
----
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![Railway](https://img.shields.io/badge/Railway-Deployed-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## 🚀 Features
+[Features](#-features) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [API Reference](#-api-reference) • [Deployment](#-deployment) • [Tech Stack](#-tech-stack)
 
-- **Automated Financial Pipeline:** Fetches raw financial statements (Income Statement, Balance Sheet, Cash Flow) and market data via `yfinance`.
-- **Advanced Ratio Engine:** Automatically computes key metrics (P/E, ROE, Margins, Liquidity ratios) across multiple historical periods to detect trends.
-- **RAG & Vector Search:** Uses `sentence-transformers` and `Qdrant` to embed and semantically search through financial documents and news context.
-- **AI Investment Memos:** Generates structured, JSON-formatted investment memos with a clear Bull/Bear case, SWOT analysis, and final recommendation (BUY/HOLD/SELL) with confidence scores.
-- **Streaming Chat Interface:** Interact dynamically with the AI via Server-Sent Events (SSE) for token-by-token financial analysis.
-- **Caching Layer:** Redis-backed caching for rapid retrieval of subsequent queries and computed metrics.
-
-## 🛠️ Architecture
-
-FinSight AI is split into two primary components:
-
-### 1. Backend (FastAPI + LangGraph)
-- **FastAPI:** High-performance async API server.
-- **LangGraph:** Orchestrates the state machine for the AI agent (Cache Check → Data Fetch → Metric Computation → Context Retrieval → Context Assembly → LLM Generation).
-- **PostgreSQL / asyncpg:** Stores company metadata and audit logs for past queries.
-- **Redis:** Handles caching for API responses and LLM generations to prevent redundant API calls.
-- **Qdrant:** Vector database for the RAG pipeline.
-- **Google GenAI (Gemini):** Core reasoning engine utilizing the `gemini-2.5-flash` model.
-
-### 2. Frontend (Next.js) *(In Progress)*
-- **Next.js (App Router):** Modern React framework for the UI.
-- **Tailwind CSS:** For premium, glassmorphic styling and responsive design.
-- **Recharts:** Interactive visualizations for financial trends.
+</div>
 
 ---
 
-## 🏗️ Local Development Setup
+## 🎯 Overview
+
+FinSight AI is a full-stack financial research platform that automates investment analysis using agentic AI workflows. It fetches live market data, computes institutional-grade financial ratios, retrieves relevant context via RAG, and generates structured investment memos — all orchestrated through a LangGraph state machine powered by **Gemini 2.5 Flash**.
+
+> **Ask it anything:** *"What are Apple's profit margins and how have they trended?"* — and get a real-time, data-backed analysis streamed token-by-token.
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| 🤖 **Agentic Pipeline** | 6-node LangGraph state machine: Cache → Fetch → Compute → Retrieve → Assemble → Generate |
+| 📊 **Financial Ratio Engine** | Auto-computes P/E, ROE, margins, liquidity ratios across multiple periods |
+| 🔍 **RAG Pipeline** | Sentence-transformers + Qdrant vector search for semantic context retrieval |
+| 📝 **Investment Memos** | JSON-structured memos with Bull/Bear case, SWOT, and BUY/HOLD/SELL recommendations |
+| ⚡ **SSE Streaming** | Real-time token-by-token financial analysis via Server-Sent Events |
+| 🗄️ **Smart Caching** | Redis-backed caching layer — sub-100ms responses on repeated queries |
+| 🐳 **Containerized** | Full Docker Compose stack: PostgreSQL, Redis, Qdrant |
+| 🎨 **Interactive Dashboard** | Next.js 16 frontend with dark-mode glassmorphic UI, Recharts visualizations, and markdown-rendered AI chat |
+| 🚀 **Cloud Deployed** | Backend on Railway, frontend on Vercel, vector DB on Qdrant Cloud |
+
+---
+
+## 🏗 Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (Next.js 16)                      │
+│         Tailwind CSS · Recharts · ReactMarkdown · SSE        │
+│                    Deployed on Vercel                         │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ HTTP / SSE
+┌──────────────────────────▼──────────────────────────────────┐
+│                  FastAPI Backend (Railway)                    │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              LangGraph State Machine                 │    │
+│  │                                                      │    │
+│  │  check_cache ──► fetch_data ──► compute_metrics     │    │
+│  │       │                              │               │    │
+│  │   use_cache     retrieve_context ◄───┘               │    │
+│  │                      │                               │    │
+│  │              assemble_context                        │    │
+│  │                      │                               │    │
+│  │             generate_response ──► cache_result       │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                                                              │
+│  Services:  LLM (Gemini) · Embedder · Fetcher · Ratios      │
+└──────┬──────────┬──────────┬──────────┬─────────────────────┘
+       │          │          │          │
+  ┌────▼───┐ ┌───▼───┐ ┌───▼────┐ ┌───▼──────┐
+  │Postgres│ │ Redis │ │ Qdrant │ │ yfinance │
+  │Railway │ │Railway│ │ Cloud  │ │  (API)   │
+  └────────┘ └───────┘ └────────┘ └──────────┘
+```
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- **Python 3.10+**
-- **Node.js 18+**
-- **Docker & Docker Compose** (for PostgreSQL, Redis, and Qdrant)
-- **Google Gemini API Key**
 
-### 1. Start Infrastructure (Docker)
-Ensure Docker is running, then boot the backend services:
+- **Python 3.11+**
+- **Node.js 18+**
+- **Docker & Docker Compose**
+- **[Gemini API Key](https://aistudio.google.com/apikey)** (free tier works)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/ZapRaptor/finsight-ai.git
+cd finsight-ai
+```
+
+### 2. Start Infrastructure
+
 ```bash
 docker-compose up -d
 ```
-*This starts PostgreSQL on port 5432, Redis on port 6379, and Qdrant on port 6333.*
 
-### 2. Backend Setup
-Navigate to the backend directory and set up the Python environment:
+This boots **PostgreSQL** (`:5432`), **Redis** (`:6379`), and **Qdrant** (`:6333`).
+
+### 3. Configure Environment
+
+```bash
+cp .env.example .env
+# Edit .env and add your GEMINI_API_KEY
+```
+
+### 4. Backend Setup
+
 ```bash
 cd backend
 python -m venv venv
+
 # Windows
 .\venv\Scripts\activate
-# Mac/Linux
+# macOS / Linux
 source venv/bin/activate
 
 pip install -r requirements.txt
-```
-
-Create a `.env` file in the root of the project with the following:
-```env
-DATABASE_URL=postgresql+asyncpg://finsight:finsight_dev@localhost:5432/finsight_db
-QDRANT_URL=http://localhost:6333
-REDIS_URL=redis://localhost:6379/0
-GEMINI_API_KEY=your_actual_gemini_api_key_here
-EMBEDDING_MODEL=all-MiniLM-L6-v2
-CACHE_TTL=86400
-CORS_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000"]
-APP_ENV=development
-LOG_LEVEL=INFO
-```
-
-Start the FastAPI development server:
-```bash
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 3. Frontend Setup *(Coming Soon)*
+### 5. Frontend Setup
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
----
-
-## 📡 API Endpoints
-
-- `POST /api/chat`: Submit a financial query (e.g., "What are Apple's profit margins?") for a full JSON response.
-- `POST /api/chat/stream`: Submit a query and receive a streamed SSE response (token-by-token).
-- `POST /api/report/{symbol}`: Generate a complete structured Investment Memo for a ticker (e.g., `AAPL`).
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
-*Built with Next.js, FastAPI, LangGraph, and Google Gemini.*
+
+## 📡 API Reference
+
+### Chat
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/chat` | Non-streaming financial Q&A |
+| `POST` | `/api/chat/stream` | SSE streaming response (token-by-token) |
+
+**Request Body:**
+```json
+{
+  "symbol": "AAPL",
+  "question": "What are Apple's profit margins?",
+  "include_documents": true
+}
+```
+
+### Investment Memo
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/report/{symbol}` | Generate structured investment memo |
+
+**Response:**
+```json
+{
+  "memo": {
+    "summary": "Apple demonstrates robust profitability...",
+    "recommendation": "BUY",
+    "confidence": 0.75,
+    "bull_case": ["Revenue growth rebounded to 6.43%...", "..."],
+    "bear_case": ["PE ratio of 37.21 is elevated...", "..."],
+    "swot": {
+      "strengths": ["..."],
+      "weaknesses": ["..."],
+      "opportunities": ["..."],
+      "threats": ["..."]
+    }
+  }
+}
+```
+
+### Health & Data
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Server health check |
+| `GET` | `/api/financials/{symbol}` | Raw financial statements |
+| `GET` | `/api/metrics/{symbol}` | Computed financial ratios |
+| `GET` | `/api/company/{symbol}` | Company metadata |
+
+---
+
+## ☁️ Deployment
+
+### Backend → Railway
+
+1. Create a new project on [Railway](https://railway.app)
+2. Add **PostgreSQL** and **Redis** plugins from the dashboard
+3. Connect your GitHub repo and set root directory to `/backend`
+4. Set environment variables:
+   - `GEMINI_API_KEY` — your Gemini API key
+   - `QDRANT_URL` — your Qdrant Cloud cluster URL
+   - `QDRANT_API_KEY` — your Qdrant Cloud API key
+   - `APP_ENV=production`
+   - `CORS_ORIGINS=["https://your-app.vercel.app"]`
+   - `DATABASE_URL` and `REDIS_URL` are auto-set by Railway plugins
+
+### Vector DB → Qdrant Cloud
+
+1. Sign up at [Qdrant Cloud](https://cloud.qdrant.io) (free 1 GB tier)
+2. Create a cluster and get the URL + API key
+3. Set `QDRANT_URL` and `QDRANT_API_KEY` on Railway
+
+### Frontend → Vercel
+
+1. Import the repo on [Vercel](https://vercel.com)
+2. Set root directory to `frontend`
+3. Set env var: `NEXT_PUBLIC_API_URL=https://your-backend.railway.app`
+4. Deploy
+
+---
+
+## 🛠 Tech Stack
+
+<table>
+<tr>
+<td><b>Category</b></td>
+<td><b>Technology</b></td>
+</tr>
+<tr>
+<td>Backend Framework</td>
+<td>FastAPI, Uvicorn</td>
+</tr>
+<tr>
+<td>Agent Orchestration</td>
+<td>LangGraph (6-node state machine)</td>
+</tr>
+<tr>
+<td>LLM</td>
+<td>Google Gemini 2.5 Flash</td>
+</tr>
+<tr>
+<td>Embeddings</td>
+<td>sentence-transformers (all-MiniLM-L6-v2)</td>
+</tr>
+<tr>
+<td>Vector Database</td>
+<td>Qdrant (Cloud)</td>
+</tr>
+<tr>
+<td>Relational Database</td>
+<td>PostgreSQL 16 + asyncpg</td>
+</tr>
+<tr>
+<td>Cache</td>
+<td>Redis 7</td>
+</tr>
+<tr>
+<td>Data Source</td>
+<td>yfinance</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Next.js 16, Tailwind CSS, Recharts, ReactMarkdown</td>
+</tr>
+<tr>
+<td>Containerization</td>
+<td>Docker Compose</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>Railway (backend), Vercel (frontend), Qdrant Cloud (vectors)</td>
+</tr>
+</table>
+
+---
+
+## 📁 Project Structure
+
+```
+finsight-ai/
+├── .env.example                  # Environment configuration template
+├── docker-compose.yml            # PostgreSQL + Redis + Qdrant (local dev)
+├── README.md
+├── LICENSE
+├── backend/
+│   ├── Procfile                  # Railway deployment entrypoint
+│   ├── railway.toml              # Railway build/deploy config
+│   ├── runtime.txt               # Python version pin
+│   ├── requirements.txt
+│   └── app/
+│       ├── main.py               # FastAPI application entry point
+│       ├── config.py             # Pydantic settings
+│       ├── agents/
+│       │   ├── state.py          # LangGraph state definition
+│       │   ├── nodes.py          # Pipeline node logic
+│       │   └── graph.py          # State machine wiring
+│       ├── api/routes/
+│       │   ├── chat.py           # Chat endpoints (+ SSE stream)
+│       │   ├── report.py         # Investment memo generation
+│       │   └── ticker.py         # Financial data & metrics
+│       ├── db/
+│       │   ├── engine.py         # Async SQLAlchemy engine
+│       │   ├── models.py         # ORM models
+│       │   └── crud.py           # Database operations
+│       └── services/
+│           ├── llm.py            # Gemini 2.5 Flash client
+│           ├── embedder.py       # Qdrant + sentence-transformers
+│           ├── fetcher.py        # yfinance data fetcher
+│           ├── ratios.py         # Financial ratio engine
+│           └── cache.py          # Redis caching layer
+└── frontend/
+    ├── vercel.json               # Vercel deployment config
+    ├── package.json
+    └── src/
+        ├── app/
+        │   ├── page.tsx          # Dashboard (ticker search)
+        │   ├── chat/page.tsx     # AI Chat (SSE streaming)
+        │   └── report/[ticker]/  # Investment memo & charts
+        ├── components/
+        │   ├── layout/Sidebar.tsx
+        │   ├── chat/ChatInterface.tsx
+        │   ├── charts/FinancialCharts.tsx
+        │   └── report/MemoCard.tsx
+        └── lib/
+            ├── api.ts            # Backend API client
+            └── utils.ts          # Formatting helpers
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+<sub>Built with ❤️ using FastAPI · LangGraph · Gemini 2.5 Flash · Next.js</sub>
+</div>
